@@ -685,32 +685,84 @@ img {
   margin-bottom: 1.25rem;
 }
 
-.admin-list {
-  display: grid;
-  gap: 1rem;
-  max-height: 70vh;
+.admin-table-wrap {
   overflow: auto;
-  padding-right: 0.5rem;
-}
-
-.admin-list--grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-}
-
-.admin-item {
-  padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 1rem;
 }
 
-.admin-item__id {
-  margin: 0 0 0.75rem;
-  font-family: "Courier New", monospace;
-  font-size: 0.72rem;
-  color: rgba(229, 226, 225, 0.56);
-  word-break: break-all;
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 840px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  vertical-align: top;
+}
+
+.admin-table th {
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.68rem;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-table td {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.admin-table td input,
+.admin-table td textarea {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  border-radius: 0.8rem;
+}
+
+.admin-table td input[readonly] {
+  color: rgba(229, 226, 225, 0.55);
+  background: rgba(255, 255, 255, 0.015);
+  cursor: not-allowed;
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-pagination span {
+  font-size: 0.76rem;
+  color: rgba(229, 226, 225, 0.7);
+  letter-spacing: 0.08em;
+}
+
+.admin-pagination button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.4rem;
+  padding: 0 0.9rem;
+  border: 1px solid rgba(0, 255, 136, 0.24);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.66rem;
+  cursor: pointer;
+}
+
+.admin-pagination button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .admin-message,
@@ -830,9 +882,6 @@ img {
     grid-template-columns: 1fr;
   }
 
-  .admin-list--grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 640px) {

@@ -33,6 +33,8 @@ type FolderState = {
   message: string | null;
 };
 
+const PAGE_SIZE = 10;
+
 const EMPTY_FOLDER_STATE: FolderState = {
   items: [],
   isSaving: false,
@@ -87,6 +89,7 @@ export function AdminPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const loadAdminData = async (signal?: AbortSignal) => {
     setIsLoading(true);
@@ -111,6 +114,7 @@ export function AdminPage() {
         message: null,
       },
     });
+    setCurrentPage(1);
     setIsLoading(false);
   };
 
@@ -154,6 +158,13 @@ export function AdminPage() {
       Gallery: assets?.gallery.length ?? 0,
     }),
     [assets],
+  );
+
+  const activeItems = folders[activeFolder].items;
+  const totalPages = Math.max(1, Math.ceil(activeItems.length / PAGE_SIZE));
+  const paginatedItems = activeItems.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
   );
 
   const updateField = (
@@ -297,7 +308,10 @@ export function AdminPage() {
           <span>Folder</span>
           <select
             value={activeFolder}
-            onChange={(event) => setActiveFolder(event.target.value as FolderName)}
+            onChange={(event) => {
+              setActiveFolder(event.target.value as FolderName);
+              setCurrentPage(1);
+            }}
           >
             <option value="Carousel">Carousel</option>
             <option value="Gallery">Gallery</option>
@@ -344,42 +358,80 @@ export function AdminPage() {
                 <p className="eyebrow">{activeFolder}</p>
                 <h2>{folderCounts[activeFolder]} assets</h2>
               </div>
+              <div className="admin-pagination">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Prev
+                </button>
+                <span>
+                  Page {currentPage} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCurrentPage((page) => Math.min(totalPages, page + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
             </header>
 
-            <div className="admin-list admin-list--grid">
-              {folders[activeFolder].items.map((item, index) => (
-                <article className="admin-item" key={item.publicId}>
-                  <p className="admin-item__id">{item.publicId}</p>
-                  <label>
-                    <span>Name</span>
-                    <input
-                      type="text"
-                      value={item.title}
-                      onChange={(event) =>
-                        updateField(activeFolder, index, "title", event.target.value)
-                      }
-                    />
-                  </label>
-                  <label>
-                    <span>Image Name</span>
-                    <input
-                      type="text"
-                      value={item.alt}
-                      readOnly
-                    />
-                  </label>
-                  <label>
-                    <span>Description</span>
-                    <textarea
-                      rows={3}
-                      value={item.description}
-                      onChange={(event) =>
-                        updateField(activeFolder, index, "description", event.target.value)
-                      }
-                    />
-                  </label>
-                </article>
-              ))}
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>File Name</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedItems.map((item, index) => {
+                    const absoluteIndex = (currentPage - 1) * PAGE_SIZE + index;
+
+                    return (
+                      <tr key={item.publicId}>
+                        <td>
+                          <input type="text" value={item.publicId} readOnly />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            value={item.title}
+                            onChange={(event) =>
+                              updateField(
+                                activeFolder,
+                                absoluteIndex,
+                                "title",
+                                event.target.value,
+                              )
+                            }
+                          />
+                        </td>
+                        <td>
+                          <textarea
+                            rows={2}
+                            value={item.description}
+                            onChange={(event) =>
+                              updateField(
+                                activeFolder,
+                                absoluteIndex,
+                                "description",
+                                event.target.value,
+                              )
+                            }
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
 
             {folders[activeFolder].message && (
