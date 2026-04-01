@@ -24,6 +24,7 @@ type CloudinaryResource = {
 
 type CloudinarySearchResponse = {
   resources: CloudinaryResource[];
+  next_cursor?: string;
 };
 
 function readCloudinaryConfig() {
@@ -99,7 +100,11 @@ async function fetchFolderMetadata(folder: string): Promise<FolderConfig | null>
   };
 }
 
-async function searchFolder(folder: string, maxResults: number) {
+async function searchFolder(
+  folder: string,
+  maxResults: number,
+  nextCursor?: string,
+) {
   const config = readCloudinaryConfig();
   assertConfig(config);
 
@@ -109,6 +114,21 @@ async function searchFolder(folder: string, maxResults: number) {
     "base64",
   );
 
+  const payload: {
+    expression: string;
+    max_results: number;
+    sort_by: Array<{ created_at: "desc" }>;
+    next_cursor?: string;
+  } = {
+    expression,
+    max_results: maxResults,
+    sort_by: [{ created_at: "desc" }],
+  };
+
+  if (nextCursor) {
+    payload.next_cursor = nextCursor;
+  }
+
   const response = await fetch(endpoint, {
     method: "POST",
     headers: {
@@ -117,11 +137,7 @@ async function searchFolder(folder: string, maxResults: number) {
       "Cache-Control": "no-store",
       Pragma: "no-cache",
     },
-    body: JSON.stringify({
-      expression,
-      max_results: maxResults,
-      sort_by: [{ created_at: "desc" }],
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -187,7 +203,7 @@ export async function loadPortfolioAssets(): Promise<PortfolioResponse> {
   const [carouselResult, galleryResult, carouselMetadata, galleryMetadata] =
     await Promise.all([
     searchFolder(config.carouselFolder, 10),
-    searchFolder(config.galleryFolder, 24),
+    searchFolder(config.galleryFolder, 16),
       fetchFolderMetadata(config.carouselFolder),
       fetchFolderMetadata(config.galleryFolder),
     ]);
@@ -195,6 +211,21 @@ export async function loadPortfolioAssets(): Promise<PortfolioResponse> {
   return {
     carousel: mergeMetadata(carouselResult.resources, carouselMetadata),
     gallery: mergeMetadata(galleryResult.resources, galleryMetadata),
+    galleryNextCursor: galleryResult.next_cursor ?? null,
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
+export async function loadGalleryPage(nextCursor?: string) {
+  const config = readCloudinaryConfig();
+  const [galleryResult, galleryMetadata] = await Promise.all([
+    searchFolder(config.galleryFolder, 16, nextCursor),
+    fetchFolderMetadata(config.galleryFolder),
+  ]);
+
+  return {
+    items: mergeMetadata(galleryResult.resources, galleryMetadata),
+    nextCursor: galleryResult.next_cursor ?? null,
     fetchedAt: new Date().toISOString(),
   };
 }

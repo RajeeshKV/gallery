@@ -6,10 +6,6 @@ export function Footer() {
         <a href="https://www.instagram.com" target="_blank" rel="noreferrer">
           Instagram
         </a>
-        <a href="https://www.x.com" target="_blank" rel="noreferrer">
-          Twitter
-        </a>
-        <a href="#systems">Terminal</a>
       </div>
       <div className="signal-meter">
         <span>PHOTOGRAPHY_SIGNAL: OPTIMAL</span>

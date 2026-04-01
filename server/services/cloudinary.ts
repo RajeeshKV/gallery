@@ -1,4 +1,5 @@
 export {
+  loadGalleryPage,
   loadFolderMetadata,
   loadPortfolioAssets,
   saveFolderMetadata,

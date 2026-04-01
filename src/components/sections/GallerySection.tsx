@@ -1,15 +1,93 @@
+import { useEffect, useState } from "react";
+import { fetchGalleryAssets } from "../../lib/api";
 import type { PortfolioAsset } from "../../types/portfolio";
 
 type GallerySectionProps = {
-  assets: PortfolioAsset[];
+  initialAssets: PortfolioAsset[];
+  initialNextCursor: string | null;
   isLoading: boolean;
 };
 
-export function GallerySection({ assets, isLoading }: GallerySectionProps) {
-  const items = assets.slice(0, 16);
+export function GallerySection({
+  initialAssets,
+  initialNextCursor,
+  isLoading,
+}: GallerySectionProps) {
+  const [items, setItems] = useState(initialAssets);
+  const [currentCursor, setCurrentCursor] = useState<string | null>(null);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([]);
+  const [isPageLoading, setIsPageLoading] = useState(false);
+
+  useEffect(() => {
+    setItems(initialAssets);
+    setCurrentCursor(null);
+    setNextCursor(initialNextCursor);
+    setCursorHistory([]);
+  }, [initialAssets, initialNextCursor]);
+
+  const handleNext = async () => {
+    if (!nextCursor || isPageLoading) {
+      return;
+    }
+
+    setIsPageLoading(true);
+
+    try {
+      const page = await fetchGalleryAssets(nextCursor);
+      setCursorHistory((current) => [...current, currentCursor]);
+      setItems(page.items);
+      setCurrentCursor(nextCursor);
+      setNextCursor(page.nextCursor);
+    } finally {
+      setIsPageLoading(false);
+    }
+  };
+
+  const handlePrevious = async () => {
+    if (cursorHistory.length === 0 || isPageLoading) {
+      return;
+    }
+
+    setIsPageLoading(true);
+    const nextHistory = cursorHistory.slice(0, -1);
+    const previousCursor = cursorHistory[cursorHistory.length - 1] ?? undefined;
+
+    try {
+      const page = await fetchGalleryAssets(previousCursor ?? undefined);
+      setItems(page.items);
+      setCurrentCursor(previousCursor ?? null);
+      setNextCursor(page.nextCursor);
+      setCursorHistory(nextHistory);
+    } finally {
+      setIsPageLoading(false);
+    }
+  };
 
   return (
     <section className="gallery-section" id="gallery">
+      <div className="gallery-header">
+        <div>
+          <p className="eyebrow">Gallery</p>
+          <h3 className="gallery-title">Monochrome Archive</h3>
+        </div>
+        <div className="gallery-controls">
+          <button
+            type="button"
+            onClick={() => void handlePrevious()}
+            disabled={cursorHistory.length === 0 || isPageLoading}
+          >
+            Prev
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleNext()}
+            disabled={!nextCursor || isPageLoading}
+          >
+            Next
+          </button>
+        </div>
+      </div>
       <div className="gallery-grid">
         {items.length > 0
           ? items.map((asset, index) => (
@@ -22,12 +100,14 @@ export function GallerySection({ assets, isLoading }: GallerySectionProps) {
               </article>
             ))
           : Array.from({ length: 8 }, (_, index) => (
-              <div className="gallery-card gallery-card--placeholder" key={index}>
-                <div />
-              </div>
+            <div className="gallery-card gallery-card--placeholder" key={index}>
+              <div />
+            </div>
             ))}
       </div>
-      {isLoading && <p className="gallery-note">Refreshing gallery from Cloudinary...</p>}
+      {(isLoading || isPageLoading) && (
+        <p className="gallery-note">Refreshing gallery from Cloudinary...</p>
+      )}
     </section>
   );
 }

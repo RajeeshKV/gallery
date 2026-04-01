@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import {
+  loadGalleryPage,
   loadFolderMetadata,
   loadPortfolioAssets,
   saveFolderMetadata,
@@ -36,6 +37,26 @@ app.get("/api/portfolio-assets", async (_, response) => {
       fetchedAt: new Date().toISOString(),
       carousel: [],
       gallery: [],
+      galleryNextCursor: null,
+    });
+  }
+});
+
+app.get("/api/gallery-assets", async (request, response) => {
+  try {
+    const cursor =
+      typeof request.query.cursor === "string" ? request.query.cursor : undefined;
+    const gallery = await loadGalleryPage(cursor);
+    response.json(gallery);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unknown Cloudinary error";
+
+    response.status(500).json({
+      message,
+      items: [],
+      nextCursor: null,
+      fetchedAt: new Date().toISOString(),
     });
   }
 });

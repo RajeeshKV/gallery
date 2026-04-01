@@ -1,5 +1,6 @@
 import { Layout } from "./components/layout/Layout";
 import { AdminPage } from "./components/pages/AdminPage";
+import { ScrollToTopButton } from "./components/ui/ScrollToTopButton";
 import { Footer } from "./components/layout/Footer";
 import { GallerySection } from "./components/sections/GallerySection";
 import { HeroSection } from "./components/sections/HeroSection";
@@ -24,10 +25,15 @@ function App() {
       />
       <main className="page-shell">
         <IntroSection />
-        <GallerySection assets={data?.gallery ?? []} isLoading={isLoading} />
+        <GallerySection
+          initialAssets={data?.gallery ?? []}
+          initialNextCursor={data?.galleryNextCursor ?? null}
+          isLoading={isLoading}
+        />
         <SystemSection />
       </main>
       <Footer />
+      <ScrollToTopButton />
     </Layout>
   );
 }

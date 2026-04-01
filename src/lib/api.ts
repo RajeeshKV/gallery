@@ -1,4 +1,8 @@
-import type { FolderConfig, PortfolioResponse } from "../types/portfolio";
+import type {
+  FolderConfig,
+  GalleryPageResponse,
+  PortfolioResponse,
+} from "../types/portfolio";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
@@ -103,4 +107,31 @@ export async function authenticateAdmin(password: string) {
   }
 
   return payload;
+}
+
+export async function fetchGalleryAssets(
+  cursor?: string,
+  signal?: AbortSignal,
+): Promise<GalleryPageResponse> {
+  const search = new URLSearchParams({ ts: Date.now().toString() });
+  if (cursor) {
+    search.set("cursor", cursor);
+  }
+
+  const response = await fetch(buildApiUrl(`/api/gallery-assets?${search.toString()}`), {
+    method: "GET",
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to load gallery assets.");
+  }
+
+  return response.json() as Promise<GalleryPageResponse>;
 }

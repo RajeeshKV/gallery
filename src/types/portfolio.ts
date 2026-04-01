@@ -16,6 +16,13 @@ export type PortfolioAsset = {
 export type PortfolioResponse = {
   carousel: PortfolioAsset[];
   gallery: PortfolioAsset[];
+  galleryNextCursor: string | null;
+  fetchedAt: string;
+};
+
+export type GalleryPageResponse = {
+  items: PortfolioAsset[];
+  nextCursor: string | null;
   fetchedAt: string;
 };
 

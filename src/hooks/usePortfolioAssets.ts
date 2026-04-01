@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchPortfolioAssets } from "../lib/api";
-import type { PortfolioResponse } from "../types/cloudinary";
+import type { PortfolioResponse } from "../types/portfolio";
 
 type State = {
   data: PortfolioResponse | null;
