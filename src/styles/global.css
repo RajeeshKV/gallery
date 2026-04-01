@@ -136,13 +136,14 @@ img {
 .hero-image {
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1) brightness(0.42);
+  filter: brightness(0.58) saturate(0.9);
 }
 
 .hero-overlay {
   background:
-    radial-gradient(circle at center, transparent 24%, rgba(14, 14, 14, 0.78) 100%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 40%);
+    radial-gradient(circle at center, transparent 24%, rgba(14, 14, 14, 0.72) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 40%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.34));
 }
 
 .hero-scanline {
@@ -369,6 +370,12 @@ img {
 .gallery-controls {
   display: flex;
   gap: 0.75rem;
+}
+
+.gallery-footer-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
 }
 
 .gallery-controls button {
@@ -993,6 +1000,10 @@ img {
 
   .gallery-controls button {
     flex: 1;
+  }
+
+  .gallery-footer-pagination {
+    justify-content: stretch;
   }
 
   .system-list div {

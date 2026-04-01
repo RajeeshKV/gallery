@@ -64,6 +64,25 @@ export function GallerySection({
     }
   };
 
+  const paginationControls = (
+    <div className="gallery-controls">
+      <button
+        type="button"
+        onClick={() => void handlePrevious()}
+        disabled={cursorHistory.length === 0 || isPageLoading}
+      >
+        Prev
+      </button>
+      <button
+        type="button"
+        onClick={() => void handleNext()}
+        disabled={!nextCursor || isPageLoading}
+      >
+        Next
+      </button>
+    </div>
+  );
+
   return (
     <section className="gallery-section" id="gallery">
       <div className="gallery-header">
@@ -71,22 +90,7 @@ export function GallerySection({
           <p className="eyebrow">Gallery</p>
           <h3 className="gallery-title">Monochrome Archive</h3>
         </div>
-        <div className="gallery-controls">
-          <button
-            type="button"
-            onClick={() => void handlePrevious()}
-            disabled={cursorHistory.length === 0 || isPageLoading}
-          >
-            Prev
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleNext()}
-            disabled={!nextCursor || isPageLoading}
-          >
-            Next
-          </button>
-        </div>
+        {paginationControls}
       </div>
       <div className="gallery-grid">
         {items.length > 0
@@ -108,6 +112,7 @@ export function GallerySection({
       {(isLoading || isPageLoading) && (
         <p className="gallery-note">Refreshing gallery from Cloudinary...</p>
       )}
+      <div className="gallery-footer-pagination">{paginationControls}</div>
     </section>
   );
 }

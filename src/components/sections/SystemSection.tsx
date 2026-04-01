@@ -19,7 +19,7 @@ export function SystemSection() {
           </div>
           <div>
             <span>PREVIOUS_SETUP</span>
-            <strong>SAMSUNG S23 3X TELEPHOTO LENS</strong>
+            <strong>SAMSUNG S23</strong>
           </div>
           <div>
             <span>EDITING_FLOW</span>
@@ -31,7 +31,7 @@ export function SystemSection() {
       <div className="system-copy" id="archive">
         <p>
           I photograph with the iPhone 17 Pro using the 48mm lens, moving from my
-          earlier Samsung S23 3X setup into a cleaner, more deliberate framing style.
+          earlier Samsung S23 setup into a cleaner, more deliberate framing style.
           Adobe Lightroom and Snapseed shape the final monochrome finish.
         </p>
         <a href="#gallery">
