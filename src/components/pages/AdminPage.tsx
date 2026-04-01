@@ -138,7 +138,7 @@ export function AdminPage() {
         setError(
           loadError instanceof Error
             ? loadError.message
-            : "Unable to load Cloudinary assets.",
+            : "Unable to load media assets.",
         );
         setIsLoading(false);
       }
@@ -201,7 +201,7 @@ export function AdminPage() {
         [folder]: {
           ...current[folder],
           isSaving: false,
-          message: "Saved to Cloudinary config.json",
+          message: "Saved configuration successfully.",
         },
       }));
     } catch (saveError) {
@@ -226,7 +226,7 @@ export function AdminPage() {
       setError(
         loadError instanceof Error
           ? loadError.message
-          : "Unable to refresh Cloudinary config.",
+          : "Unable to refresh configuration.",
       );
       setIsLoading(false);
     }
@@ -264,8 +264,7 @@ export function AdminPage() {
           <p className="eyebrow">RAW FRAMES GALLERY</p>
           <h1>Admin Panel</h1>
           <p>
-            Enter the admin password to open the Cloudinary config editor at
-            `/admin`.
+            Enter the admin password to open the configuration editor at `/admin`.
           </p>
 
           <form className="admin-auth-form" onSubmit={handleLogin}>
@@ -295,11 +294,10 @@ export function AdminPage() {
     <main className="admin-page">
       <section className="admin-hero">
         <p className="eyebrow">RAW FRAMES GALLERY</p>
-        <h1>Cloudinary Admin</h1>
+        <h1>Admin</h1>
         <p>
-          Update carousel and gallery names from the `config.json` stored inside
-          each Cloudinary folder. Description is optional, and the public UI reads
-          these values on every fresh fetch.
+          Update carousel and gallery names from the folder configuration.
+          Description is optional, and the public UI reads these values on every fresh fetch.
         </p>
       </section>
 

@@ -110,7 +110,7 @@ export function GallerySection({
             ))}
       </div>
       {(isLoading || isPageLoading) && (
-        <p className="gallery-note">Refreshing gallery from Cloudinary...</p>
+        <p className="gallery-note">Refreshing gallery...</p>
       )}
       <div className="gallery-footer-pagination">{paginationControls}</div>
     </section>

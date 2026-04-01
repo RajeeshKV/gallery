@@ -27,7 +27,7 @@ export async function fetchPortfolioAssets(
   });
 
   if (!response.ok) {
-    throw new Error("Unable to load Cloudinary assets.");
+    throw new Error("Unable to load media assets.");
   }
 
   return response.json() as Promise<PortfolioResponse>;
@@ -130,7 +130,7 @@ export async function fetchGalleryAssets(
   });
 
   if (!response.ok) {
-    throw new Error("Unable to load gallery assets.");
+    throw new Error("Unable to load gallery items.");
   }
 
   return response.json() as Promise<GalleryPageResponse>;

@@ -13,7 +13,7 @@ const FALLBACK_SLIDES = [
     url: "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1400&q=80",
     title: "Raw Frames Gallery",
     alt: "Monochrome architecture",
-    description: "Awaiting Cloudinary carousel assets",
+    description: "Awaiting latest carousel assets",
   },
 ];
 
@@ -95,7 +95,7 @@ export function HeroSection({ slides, isLoading, error }: HeroSectionProps) {
 
       {(isLoading || error) && (
         <div className="hero-toast" role="status">
-          {isLoading ? "Syncing latest Cloudinary assets..." : error}
+          {isLoading ? "Syncing latest media assets..." : error}
         </div>
       )}
 
