@@ -41,7 +41,7 @@ export function HeroSection({ slides, isLoading, error }: HeroSectionProps) {
   }, [displaySlides.length]);
 
   return (
-    <section className="hero-section">
+    <section className="hero-section" id="home">
       <div className="hero-carousel">
         {displaySlides.map((slide, index) => (
           <article

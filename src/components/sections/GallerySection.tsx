@@ -13,6 +13,13 @@ export function GallerySection({
   initialNextCursor,
   isLoading,
 }: GallerySectionProps) {
+  const scrollToGalleryStart = () => {
+    document.getElementById("gallery")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   const [items, setItems] = useState(initialAssets);
   const [currentCursor, setCurrentCursor] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
@@ -39,6 +46,7 @@ export function GallerySection({
       setItems(page.items);
       setCurrentCursor(nextCursor);
       setNextCursor(page.nextCursor);
+      scrollToGalleryStart();
     } finally {
       setIsPageLoading(false);
     }
@@ -59,6 +67,7 @@ export function GallerySection({
       setCurrentCursor(previousCursor ?? null);
       setNextCursor(page.nextCursor);
       setCursorHistory(nextHistory);
+      scrollToGalleryStart();
     } finally {
       setIsPageLoading(false);
     }
