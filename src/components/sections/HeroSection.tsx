@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { PortfolioAsset } from "../../types/cloudinary";
+import type { PortfolioAsset } from "../../types/portfolio";
 
 type HeroSectionProps = {
   slides: PortfolioAsset[];

@@ -1,4 +1,4 @@
-import type { PortfolioAsset } from "../../types/cloudinary";
+import type { PortfolioAsset } from "../../types/portfolio";
 
 type GallerySectionProps = {
   assets: PortfolioAsset[];

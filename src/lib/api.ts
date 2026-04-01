@@ -1,4 +1,4 @@
-import type { PortfolioResponse } from "../types/cloudinary";
+import type { PortfolioResponse } from "../types/portfolio";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
