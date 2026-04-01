@@ -538,10 +538,13 @@ img {
 
 .admin-auth-card {
   width: min(100%, 28rem);
-  padding: 2rem;
+  padding: 2.25rem;
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+    rgba(0, 0, 0, 0.28);
   box-shadow: var(--shadow);
+  border-radius: 1.5rem;
 }
 
 .admin-auth-card h1 {
@@ -605,6 +608,11 @@ img {
   gap: 0.5rem;
 }
 
+.admin-auth-form label {
+  display: grid;
+  gap: 0.6rem;
+}
+
 .admin-toolbar span,
 .admin-item span {
   text-transform: uppercase;
@@ -614,20 +622,27 @@ img {
 }
 
 .admin-toolbar input,
+.admin-toolbar select,
 .admin-item input,
-.admin-item textarea {
+.admin-item textarea,
+.admin-auth-form input {
   width: 100%;
   padding: 0.85rem 1rem;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text);
   outline: none;
+  border-radius: 1rem;
+  min-height: 3rem;
 }
 
 .admin-toolbar input:focus,
+.admin-toolbar select:focus,
 .admin-item input:focus,
-.admin-item textarea:focus {
+.admin-item textarea:focus,
+.admin-auth-form input:focus {
   border-color: rgba(0, 255, 136, 0.45);
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.12);
 }
 
 .admin-toolbar a,
@@ -646,11 +661,12 @@ img {
   letter-spacing: 0.18em;
   font-size: 0.7rem;
   cursor: pointer;
+  border-radius: 999px;
 }
 
 .admin-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
@@ -677,10 +693,16 @@ img {
   padding-right: 0.5rem;
 }
 
+.admin-list--grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
 .admin-item {
   padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
+  border-radius: 1rem;
 }
 
 .admin-item__id {
@@ -805,6 +827,10 @@ img {
   }
 
   .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-list--grid {
     grid-template-columns: 1fr;
   }
 }

@@ -79,6 +79,7 @@ export function AdminPage() {
   const [isAuthed, setIsAuthed] = useState(() => isAdminAuthenticated());
   const [authError, setAuthError] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(false);
+  const [activeFolder, setActiveFolder] = useState<FolderName>("Carousel");
   const [assets, setAssets] = useState<PortfolioResponse | null>(null);
   const [folders, setFolders] = useState<Record<FolderName, FolderState>>({
     Carousel: EMPTY_FOLDER_STATE,
@@ -86,6 +87,32 @@ export function AdminPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const loadAdminData = async (signal?: AbortSignal) => {
+    setIsLoading(true);
+    setError(null);
+
+    const [portfolio, carouselMetadata, galleryMetadata] = await Promise.all([
+      fetchPortfolioAssets(signal),
+      fetchFolderMetadata("Carousel", signal),
+      fetchFolderMetadata("Gallery", signal),
+    ]);
+
+    setAssets(portfolio);
+    setFolders({
+      Carousel: {
+        items: toEditableItems(portfolio.carousel, carouselMetadata),
+        isSaving: false,
+        message: null,
+      },
+      Gallery: {
+        items: toEditableItems(portfolio.gallery, galleryMetadata),
+        isSaving: false,
+        message: null,
+      },
+    });
+    setIsLoading(false);
+  };
 
   useEffect(() => {
     if (!isAuthed) {
@@ -97,33 +124,8 @@ export function AdminPage() {
     const controller = new AbortController();
 
     const load = async () => {
-      setIsLoading(true);
-      setError(null);
-
       try {
-        const [portfolio, carouselMetadata, galleryMetadata] = await Promise.all([
-          fetchPortfolioAssets(controller.signal),
-          fetchFolderMetadata("Carousel", controller.signal),
-          fetchFolderMetadata("Gallery", controller.signal),
-        ]);
-
-        if (!active) {
-          return;
-        }
-
-        setAssets(portfolio);
-        setFolders({
-          Carousel: {
-            items: toEditableItems(portfolio.carousel, carouselMetadata),
-            isSaving: false,
-            message: null,
-          },
-          Gallery: {
-            items: toEditableItems(portfolio.gallery, galleryMetadata),
-            isSaving: false,
-            message: null,
-          },
-        });
+        await loadAdminData(controller.signal);
       } catch (loadError) {
         if (!active) {
           return;
@@ -134,10 +136,7 @@ export function AdminPage() {
             ? loadError.message
             : "Unable to load Cloudinary assets.",
         );
-      } finally {
-        if (active) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
@@ -206,6 +205,19 @@ export function AdminPage() {
               : "Unable to save metadata.",
         },
       }));
+    }
+  };
+
+  const handleRefresh = async () => {
+    try {
+      await loadAdminData();
+    } catch (loadError) {
+      setError(
+        loadError instanceof Error
+          ? loadError.message
+          : "Unable to refresh Cloudinary config.",
+      );
+      setIsLoading(false);
     }
   };
 
@@ -281,16 +293,27 @@ export function AdminPage() {
       </section>
 
       <section className="admin-toolbar">
-        <label>
-          <span>Session Password</span>
-          <input
-            type="password"
-            value={adminKey}
-            onChange={(event) => setAdminKey(event.target.value)}
-            placeholder="Authenticated"
-          />
+        <label className="admin-toolbar__folder">
+          <span>Folder</span>
+          <select
+            value={activeFolder}
+            onChange={(event) => setActiveFolder(event.target.value as FolderName)}
+          >
+            <option value="Carousel">Carousel</option>
+            <option value="Gallery">Gallery</option>
+          </select>
         </label>
         <div className="admin-toolbar__actions">
+          <button type="button" onClick={() => void handleRefresh()}>
+            Refresh
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleSave(activeFolder)}
+            disabled={folders[activeFolder].isSaving || isLoading}
+          >
+            {folders[activeFolder].isSaving ? "Saving..." : "Save config.json"}
+          </button>
           <a href="/">Back to gallery</a>
           <button type="button" onClick={handleLogout}>
             Logout
@@ -315,63 +338,54 @@ export function AdminPage() {
 
       {!isLoading && !error && (
         <div className="admin-grid">
-          {(["Carousel", "Gallery"] as FolderName[]).map((folder) => (
-            <section className="admin-card" key={folder}>
-              <header className="admin-card__header">
-                <div>
-                  <p className="eyebrow">{folder}</p>
-                  <h2>{folderCounts[folder]} assets</h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => void handleSave(folder)}
-                  disabled={folders[folder].isSaving}
-                >
-                  {folders[folder].isSaving ? "Saving..." : "Save config.json"}
-                </button>
-              </header>
-
-              <div className="admin-list">
-                {folders[folder].items.map((item, index) => (
-                  <article className="admin-item" key={item.publicId}>
-                    <p className="admin-item__id">{item.publicId}</p>
-                    <label>
-                      <span>Name</span>
-                      <input
-                        type="text"
-                        value={item.title}
-                        onChange={(event) =>
-                          updateField(folder, index, "title", event.target.value)
-                        }
-                      />
-                    </label>
-                    <label>
-                      <span>Image Name</span>
-                      <input
-                        type="text"
-                        value={item.alt}
-                        readOnly
-                      />
-                    </label>
-                    <label>
-                      <span>Description</span>
-                      <textarea
-                        rows={3}
-                        value={item.description}
-                        onChange={(event) =>
-                          updateField(folder, index, "description", event.target.value)
-                        }
-                      />
-                    </label>
-                  </article>
-                ))}
+          <section className="admin-card" key={activeFolder}>
+            <header className="admin-card__header">
+              <div>
+                <p className="eyebrow">{activeFolder}</p>
+                <h2>{folderCounts[activeFolder]} assets</h2>
               </div>
+            </header>
 
-              {folders[folder].message && (
-                <p className="admin-message">{folders[folder].message}</p>
-              )}
-            </section>
-          ))}
+            <div className="admin-list admin-list--grid">
+              {folders[activeFolder].items.map((item, index) => (
+                <article className="admin-item" key={item.publicId}>
+                  <p className="admin-item__id">{item.publicId}</p>
+                  <label>
+                    <span>Name</span>
+                    <input
+                      type="text"
+                      value={item.title}
+                      onChange={(event) =>
+                        updateField(activeFolder, index, "title", event.target.value)
+                      }
+                    />
+                  </label>
+                  <label>
+                    <span>Image Name</span>
+                    <input
+                      type="text"
+                      value={item.alt}
+                      readOnly
+                    />
+                  </label>
+                  <label>
+                    <span>Description</span>
+                    <textarea
+                      rows={3}
+                      value={item.description}
+                      onChange={(event) =>
+                        updateField(activeFolder, index, "description", event.target.value)
+                      }
+                    />
+                  </label>
+                </article>
+              ))}
+            </div>
+
+            {folders[activeFolder].message && (
+              <p className="admin-message">{folders[activeFolder].message}</p>
+            )}
+          </section>
         </div>
       )}
     </main>
