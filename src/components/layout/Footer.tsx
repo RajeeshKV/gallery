@@ -3,7 +3,11 @@ export function Footer() {
     <footer className="site-footer" id="info">
       <div className="footer-meta">©2026 RAJEESH_KV.RAW_FRAMES_GALLERY</div>
       <div className="footer-links">
-        <a href="https://www.instagram.com" target="_blank" rel="noreferrer">
+        <a
+          href="https://www.instagram.com/rawframesgallery"
+          target="_blank"
+          rel="noreferrer"
+        >
           Instagram
         </a>
       </div>

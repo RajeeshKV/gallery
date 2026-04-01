@@ -34,7 +34,11 @@ export function SystemSection() {
           earlier Samsung S23 setup into a cleaner, more deliberate framing style.
           Adobe Lightroom and Snapseed shape the final monochrome finish.
         </p>
-        <a href="#gallery">
+        <a
+          href="https://www.instagram.com/rawframesgallery"
+          target="_blank"
+          rel="noreferrer"
+        >
           Enter Archive Directory
           <span className="material-icons-outlined">arrow_forward</span>
         </a>
