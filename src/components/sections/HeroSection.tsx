@@ -63,12 +63,6 @@ export function HeroSection({ slides, isLoading, error }: HeroSectionProps) {
           </div>
           <p>System Online: 200 OK</p>
         </div>
-        <div className="scroll-indicator">
-          <span>SCROLL_TO_EXPLORE</span>
-          <div className="scroll-line">
-            <i />
-          </div>
-        </div>
       </div>
 
       <div className="hero-copy">
@@ -92,6 +86,13 @@ export function HeroSection({ slides, isLoading, error }: HeroSectionProps) {
           ))}
         </div>
       </div>
+
+      <a className="scroll-indicator" href="#intro" aria-label="Scroll to explore">
+        <span className="scroll-indicator__arrow" aria-hidden="true">
+          <i />
+          <i />
+        </span>
+      </a>
 
       {(isLoading || error) && (
         <div className="hero-toast" role="status">

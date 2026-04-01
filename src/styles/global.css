@@ -205,10 +205,56 @@ img {
 }
 
 .scroll-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
+  position: absolute;
+  left: 50%;
+  bottom: 2.5rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgba(0, 255, 136, 0.26);
+  border-radius: 999px;
+  background: rgba(8, 20, 13, 0.42);
+  box-shadow: 0 0 0 1px rgba(0, 255, 136, 0.06) inset;
+  transform: translateX(-50%);
+  transition:
+    border-color 220ms ease,
+    transform 220ms ease,
+    background 220ms ease;
+}
+
+.scroll-indicator:hover {
+  border-color: rgba(0, 255, 136, 0.5);
+  background: rgba(8, 20, 13, 0.62);
+  transform: translateX(-50%) translateY(0.1rem);
+}
+
+.scroll-indicator__arrow {
+  position: relative;
+  width: 0.9rem;
+  height: 1.1rem;
+  animation: scroll-bounce 1.6s infinite ease-in-out;
+}
+
+.scroll-indicator__arrow i {
+  position: absolute;
+  left: 50%;
+  width: 0.58rem;
+  height: 0.58rem;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.scroll-indicator__arrow i:first-child {
+  top: 0;
+  opacity: 0.55;
+}
+
+.scroll-indicator__arrow i:last-child {
+  top: 0.34rem;
 }
 
 .scroll-indicator span,
@@ -217,24 +263,6 @@ img {
 .gallery-card__meta span,
 .signal-meter span {
   color: var(--accent);
-}
-
-.scroll-line {
-  position: relative;
-  width: 1px;
-  height: 4.25rem;
-  background: rgba(0, 255, 136, 0.24);
-  overflow: hidden;
-}
-
-.scroll-line i {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 50%;
-  background: var(--accent);
-  animation: scroll-pulse 1.7s infinite ease-in-out;
 }
 
 .hero-copy {
@@ -902,12 +930,16 @@ img {
   }
 }
 
-@keyframes scroll-pulse {
-  0% {
-    transform: translateY(-100%);
-  }
+@keyframes scroll-bounce {
+  0%,
   100% {
-    transform: translateY(200%);
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(0.45rem);
+  }
+  60% {
+    transform: translateY(0.2rem);
   }
 }
 
@@ -988,6 +1020,15 @@ img {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.5rem;
+  }
+
+  .scroll-indicator {
+    bottom: 4.5rem;
+    transform: translateX(-50%);
+  }
+
+  .scroll-indicator:hover {
+    transform: translateX(-50%) translateY(0.1rem);
   }
 
   .gallery-grid {

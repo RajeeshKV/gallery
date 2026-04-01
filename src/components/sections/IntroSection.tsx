@@ -1,6 +1,6 @@
 export function IntroSection() {
   return (
-    <header className="intro-section">
+    <header className="intro-section" id="intro">
       <h2>CAPTURING THE WORLD THROUGH MY EYES.</h2>
       <div className="intro-aside">
         <span>Rajeesh KV</span>
