@@ -1,1 +1,5 @@
-export { loadPortfolioAssets } from "../../shared/cloudinary.js";
+export {
+  loadFolderMetadata,
+  loadPortfolioAssets,
+  saveFolderMetadata,
+} from "../../shared/cloudinary.js";

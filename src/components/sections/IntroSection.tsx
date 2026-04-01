@@ -3,10 +3,10 @@ export function IntroSection() {
     <header className="intro-section">
       <h2>CAPTURING THE WORLD THROUGH MY EYES.</h2>
       <div className="intro-aside">
-        <span>Core Methodology</span>
+        <span>Rajeesh KV</span>
         <p>
-          A clinical examination of structure, light, and entropy within urban
-          and natural frameworks.
+          RAW FRAMES GALLERY is my monochrome archive, focused on form,
+          contrast, quiet geometry, and the mood hidden inside ordinary spaces.
         </p>
       </div>
     </header>

@@ -6,29 +6,33 @@ export function SystemSection() {
         <h3>System Specification</h3>
         <div className="system-list">
           <div>
-            <span>OPTICS_ARRAY</span>
-            <strong>35MM / 50MM / 85MM PRIME</strong>
+            <span>PHOTOGRAPHER</span>
+            <strong>RAJEESH KV</strong>
           </div>
           <div>
-            <span>SENSOR_OUTPUT</span>
-            <strong>61.0 MEGAPIXEL RAW</strong>
+            <span>CAMERA_BODY</span>
+            <strong>IPHONE 17 PRO</strong>
           </div>
           <div>
-            <span>PROCESSING_KERNEL</span>
-            <strong>ADOBE_ARCHITECT_v4.2</strong>
+            <span>PRIMARY_LENS</span>
+            <strong>48MM</strong>
           </div>
           <div>
-            <span>GEOLOCATION</span>
-            <strong>LAT 40.7128 N / LON 74.0060 W</strong>
+            <span>PREVIOUS_SETUP</span>
+            <strong>SAMSUNG S23 3X TELEPHOTO LENS</strong>
+          </div>
+          <div>
+            <span>EDITING_FLOW</span>
+            <strong>ADOBE LIGHTROOM / SNAPSEED</strong>
           </div>
         </div>
       </div>
 
       <div className="system-copy" id="archive">
         <p>
-          Every frame is a calculation. I treat the camera as an instrument for
-          spatial analysis, stripping away noise to reveal the mathematical core
-          of our environment.
+          I photograph with the iPhone 17 Pro using the 48mm lens, moving from my
+          earlier Samsung S23 3X setup into a cleaner, more deliberate framing style.
+          Adobe Lightroom and Snapseed shape the final monochrome finish.
         </p>
         <a href="#gallery">
           Enter Archive Directory

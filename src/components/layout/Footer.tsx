@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="site-footer" id="info">
-      <div className="footer-meta">©2026 SYSTEM_ARCHITECT.ALL_RIGHTS_RESERVED</div>
+      <div className="footer-meta">©2026 RAJEESH_KV.RAW_FRAMES_GALLERY</div>
       <div className="footer-links">
         <a href="https://www.instagram.com" target="_blank" rel="noreferrer">
           Instagram
@@ -12,7 +12,7 @@ export function Footer() {
         <a href="#systems">Terminal</a>
       </div>
       <div className="signal-meter">
-        <span>SIGNAL_STRENGTH: OPTIMAL</span>
+        <span>PHOTOGRAPHY_SIGNAL: OPTIMAL</span>
         <div className="signal-bars" aria-hidden="true">
           <i />
           <i />

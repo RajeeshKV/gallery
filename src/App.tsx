@@ -1,4 +1,5 @@
 import { Layout } from "./components/layout/Layout";
+import { AdminPage } from "./components/pages/AdminPage";
 import { Footer } from "./components/layout/Footer";
 import { GallerySection } from "./components/sections/GallerySection";
 import { HeroSection } from "./components/sections/HeroSection";
@@ -7,7 +8,12 @@ import { SystemSection } from "./components/sections/SystemSection";
 import { usePortfolioAssets } from "./hooks/usePortfolioAssets";
 
 function App() {
+  const isAdminPage = window.location.pathname.startsWith("/admin");
   const { data, error, isLoading } = usePortfolioAssets();
+
+  if (isAdminPage) {
+    return <AdminPage />;
+  }
 
   return (
     <Layout>

@@ -18,3 +18,15 @@ export type PortfolioResponse = {
   gallery: PortfolioAsset[];
   fetchedAt: string;
 };
+
+export type FolderConfigEntry = {
+  name: string;
+  description?: string;
+  imageName?: string;
+};
+
+export type FolderConfig = {
+  folder: string;
+  updatedAt: string;
+  entries: Record<string, FolderConfigEntry>;
+};

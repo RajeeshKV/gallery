@@ -11,7 +11,7 @@ const FALLBACK_SLIDES = [
   {
     id: "fallback-1",
     url: "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1400&q=80",
-    title: "Urban Geometry",
+    title: "Raw Frames Gallery",
     alt: "Monochrome architecture",
     description: "Awaiting Cloudinary carousel assets",
   },
@@ -73,11 +73,11 @@ export function HeroSection({ slides, isLoading, error }: HeroSectionProps) {
 
       <div className="hero-copy">
         <div>
-          <p className="eyebrow">THE ARCHITECT</p>
+          <p className="eyebrow">RAJEESH KV</p>
           <h1>{displaySlides[activeIndex]?.title ?? "Architectural Stories"}</h1>
           <p className="hero-description">
             {displaySlides[activeIndex]?.description ??
-              "Technical photography driven by light, form, and structure."}
+              "RAW FRAMES GALLERY presents monochrome studies of light, structure, and stillness."}
           </p>
         </div>
         <div className="hero-dots">
@@ -96,6 +96,14 @@ export function HeroSection({ slides, isLoading, error }: HeroSectionProps) {
       {(isLoading || error) && (
         <div className="hero-toast" role="status">
           {isLoading ? "Syncing latest Cloudinary assets..." : error}
+        </div>
+      )}
+
+      {isLoading && slides.length === 0 && (
+        <div className="hero-loading-panel" aria-hidden="true">
+          <div className="admin-skeleton admin-skeleton--title" />
+          <div className="admin-skeleton" />
+          <div className="admin-skeleton" />
         </div>
       )}
     </section>

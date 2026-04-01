@@ -5,7 +5,7 @@ type NavigationProps = {
 export function Navigation({ isVisible }: NavigationProps) {
   return (
     <nav className={`sticky-nav ${isVisible ? "visible" : ""}`}>
-      <div className="brand-mark">THE ARCHITECT</div>
+      <div className="brand-mark">RAW FRAMES GALLERY</div>
       <div className="nav-links">
         <a href="#gallery">Projects</a>
         <a href="#systems">Systems</a>

@@ -1,9 +1,15 @@
 import "dotenv/config";
 import express from "express";
-import { loadPortfolioAssets } from "./services/cloudinary.js";
+import {
+  loadFolderMetadata,
+  loadPortfolioAssets,
+  saveFolderMetadata,
+} from "./services/cloudinary.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 8787);
+
+app.use(express.json());
 
 app.use((_, response, next) => {
   response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
@@ -30,6 +36,71 @@ app.get("/api/portfolio-assets", async (_, response) => {
       fetchedAt: new Date().toISOString(),
       carousel: [],
       gallery: [],
+    });
+  }
+});
+
+app.get("/api/admin-metadata", async (request, response) => {
+  const folder = String(request.query.folder ?? "");
+
+  if (folder !== "Carousel" && folder !== "Gallery") {
+    response.status(400).json({ message: "Folder must be Carousel or Gallery." });
+    return;
+  }
+
+  try {
+    const metadata = await loadFolderMetadata(folder);
+    response.json(metadata);
+  } catch (error) {
+    response.status(500).json({
+      message:
+        error instanceof Error ? error.message : "Unable to load metadata.",
+    });
+  }
+});
+
+app.post("/api/admin-auth", async (request, response) => {
+  const adminKey = process.env.ADMIN_PANEL_KEY;
+
+  if (!adminKey) {
+    response.status(500).json({
+      message: "ADMIN_PANEL_KEY is not configured on the server.",
+    });
+    return;
+  }
+
+  const password = String(request.body.password ?? "");
+  const isValid = password === adminKey;
+
+  response.status(isValid ? 200 : 401).json({
+    success: isValid,
+    message: isValid ? "Authenticated" : "Incorrect password.",
+  });
+});
+
+app.post("/api/admin-metadata", async (request, response) => {
+  const folder = String(request.query.folder ?? "");
+  const adminKey = process.env.ADMIN_PANEL_KEY;
+
+  if (folder !== "Carousel" && folder !== "Gallery") {
+    response.status(400).json({ message: "Folder must be Carousel or Gallery." });
+    return;
+  }
+
+  if (!adminKey || request.header("x-admin-key") !== adminKey) {
+    response.status(401).json({
+      message: "Unauthorized. Set ADMIN_PANEL_KEY and send it in x-admin-key.",
+    });
+    return;
+  }
+
+  try {
+    const metadata = await saveFolderMetadata(folder, request.body.entries ?? {});
+    response.json(metadata);
+  } catch (error) {
+    response.status(500).json({
+      message:
+        error instanceof Error ? error.message : "Unable to save metadata.",
     });
   }
 });
