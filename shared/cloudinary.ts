@@ -16,6 +16,8 @@ type CloudinaryResource = {
   width: number;
   height: number;
   created_at: string;
+  resource_type: "image" | "video";
+  duration?: number;
   display_name?: string;
   context?: {
     custom?: Record<string, string>;
@@ -55,6 +57,13 @@ function assertConfig(config: ReturnType<typeof readCloudinaryConfig>) {
 
 function getAssetBaseName(publicId: string) {
   return publicId.split("/").pop() ?? publicId;
+}
+
+function encodePublicId(publicId: string) {
+  return publicId
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
 }
 
 function createMetadataUrl(cloudName: string, folder: string) {
@@ -102,6 +111,7 @@ async function fetchFolderMetadata(folder: string): Promise<FolderConfig | null>
 
 async function searchFolder(
   folder: string,
+  resourceType: "image" | "video",
   maxResults: number,
   nextCursor?: string,
 ) {
@@ -109,7 +119,7 @@ async function searchFolder(
   assertConfig(config);
 
   const endpoint = `https://api.cloudinary.com/v1_1/${config.cloudName}/resources/search`;
-  const expression = `resource_type:image AND folder="${folder}"`;
+  const expression = `resource_type:${resourceType} AND folder="${folder}"`;
   const auth = Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString(
     "base64",
   );
@@ -148,12 +158,30 @@ async function searchFolder(
   return (await response.json()) as CloudinarySearchResponse;
 }
 
+function buildVideoThumbnailUrl(
+  cloudName: string,
+  resource: CloudinaryResource,
+) {
+  const midpoint = resource.duration && resource.duration > 0
+    ? Number((resource.duration / 2).toFixed(2))
+    : 1;
+
+  return `https://res.cloudinary.com/${cloudName}/video/upload/so_${midpoint},f_jpg/${encodePublicId(resource.public_id)}.jpg`;
+}
+
 function toPortfolioAsset(resource: CloudinaryResource): PortfolioAsset {
+  const config = readCloudinaryConfig();
   const custom = resource.context?.custom ?? {};
   const title = custom.title ?? resource.display_name ?? resource.public_id;
   const description =
     custom.description ?? "Latest asset pulled from Cloudinary.";
   const alt = custom.alt ?? title;
+  const mediaType = resource.resource_type;
+  const playbackUrl = resource.secure_url;
+  const thumbnailUrl =
+    mediaType === "video" && config.cloudName
+      ? buildVideoThumbnailUrl(config.cloudName, resource)
+      : resource.secure_url;
 
   return {
     id: resource.asset_id,
@@ -168,6 +196,10 @@ function toPortfolioAsset(resource: CloudinaryResource): PortfolioAsset {
     format: resource.format,
     folder: resource.folder ?? "",
     createdAt: resource.created_at,
+    mediaType,
+    thumbnailUrl,
+    playbackUrl,
+    duration: resource.duration,
   };
 }
 
@@ -200,10 +232,17 @@ function mergeMetadata(
 export async function loadPortfolioAssets(): Promise<PortfolioResponse> {
   const config = readCloudinaryConfig();
 
-  const [carouselResult, galleryResult, carouselMetadata, galleryMetadata] =
+  const [
+    carouselResult,
+    galleryResult,
+    videoResult,
+    carouselMetadata,
+    galleryMetadata,
+  ] =
     await Promise.all([
-    searchFolder(config.carouselFolder, 10),
-    searchFolder(config.galleryFolder, 16),
+    searchFolder(config.carouselFolder, "image", 10),
+    searchFolder(config.galleryFolder, "image", 16),
+    searchFolder(config.galleryFolder, "video", 12),
       fetchFolderMetadata(config.carouselFolder),
       fetchFolderMetadata(config.galleryFolder),
     ]);
@@ -212,6 +251,8 @@ export async function loadPortfolioAssets(): Promise<PortfolioResponse> {
     carousel: mergeMetadata(carouselResult.resources, carouselMetadata),
     gallery: mergeMetadata(galleryResult.resources, galleryMetadata),
     galleryNextCursor: galleryResult.next_cursor ?? null,
+    videos: mergeMetadata(videoResult.resources, galleryMetadata),
+    videosNextCursor: videoResult.next_cursor ?? null,
     fetchedAt: new Date().toISOString(),
   };
 }
@@ -219,13 +260,27 @@ export async function loadPortfolioAssets(): Promise<PortfolioResponse> {
 export async function loadGalleryPage(nextCursor?: string) {
   const config = readCloudinaryConfig();
   const [galleryResult, galleryMetadata] = await Promise.all([
-    searchFolder(config.galleryFolder, 16, nextCursor),
+    searchFolder(config.galleryFolder, "image", 16, nextCursor),
     fetchFolderMetadata(config.galleryFolder),
   ]);
 
   return {
     items: mergeMetadata(galleryResult.resources, galleryMetadata),
     nextCursor: galleryResult.next_cursor ?? null,
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
+export async function loadVideoPage(nextCursor?: string) {
+  const config = readCloudinaryConfig();
+  const [videoResult, galleryMetadata] = await Promise.all([
+    searchFolder(config.galleryFolder, "video", 12, nextCursor),
+    fetchFolderMetadata(config.galleryFolder),
+  ]);
+
+  return {
+    items: mergeMetadata(videoResult.resources, galleryMetadata),
+    nextCursor: videoResult.next_cursor ?? null,
     fetchedAt: new Date().toISOString(),
   };
 }

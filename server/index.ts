@@ -4,6 +4,7 @@ import {
   loadGalleryPage,
   loadFolderMetadata,
   loadPortfolioAssets,
+  loadVideoPage,
   saveFolderMetadata,
 } from "./services/cloudinary.js";
 
@@ -38,6 +39,8 @@ app.get("/api/portfolio-assets", async (_, response) => {
       carousel: [],
       gallery: [],
       galleryNextCursor: null,
+      videos: [],
+      videosNextCursor: null,
     });
   }
 });
@@ -48,6 +51,25 @@ app.get("/api/gallery-assets", async (request, response) => {
       typeof request.query.cursor === "string" ? request.query.cursor : undefined;
     const gallery = await loadGalleryPage(cursor);
     response.json(gallery);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unknown Cloudinary error";
+
+    response.status(500).json({
+      message,
+      items: [],
+      nextCursor: null,
+      fetchedAt: new Date().toISOString(),
+    });
+  }
+});
+
+app.get("/api/video-assets", async (request, response) => {
+  try {
+    const cursor =
+      typeof request.query.cursor === "string" ? request.query.cursor : undefined;
+    const videos = await loadVideoPage(cursor);
+    response.json(videos);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown Cloudinary error";

@@ -6,6 +6,7 @@ import { GallerySection } from "./components/sections/GallerySection";
 import { HeroSection } from "./components/sections/HeroSection";
 import { IntroSection } from "./components/sections/IntroSection";
 import { SystemSection } from "./components/sections/SystemSection";
+import { VideoSection } from "./components/sections/VideoSection";
 import { usePortfolioAssets } from "./hooks/usePortfolioAssets";
 
 function App() {
@@ -28,6 +29,11 @@ function App() {
         <GallerySection
           initialAssets={data?.gallery ?? []}
           initialNextCursor={data?.galleryNextCursor ?? null}
+          isLoading={isLoading}
+        />
+        <VideoSection
+          initialAssets={data?.videos ?? []}
+          initialNextCursor={data?.videosNextCursor ?? null}
           isLoading={isLoading}
         />
         <SystemSection />

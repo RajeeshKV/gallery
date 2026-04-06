@@ -1,6 +1,6 @@
 import type {
   FolderConfig,
-  GalleryPageResponse,
+  MediaPageResponse,
   PortfolioResponse,
 } from "../types/portfolio";
 
@@ -112,7 +112,7 @@ export async function authenticateAdmin(password: string) {
 export async function fetchGalleryAssets(
   cursor?: string,
   signal?: AbortSignal,
-): Promise<GalleryPageResponse> {
+): Promise<MediaPageResponse> {
   const search = new URLSearchParams({ ts: Date.now().toString() });
   if (cursor) {
     search.set("cursor", cursor);
@@ -133,5 +133,32 @@ export async function fetchGalleryAssets(
     throw new Error("Unable to load gallery items.");
   }
 
-  return response.json() as Promise<GalleryPageResponse>;
+  return response.json() as Promise<MediaPageResponse>;
+}
+
+export async function fetchVideoAssets(
+  cursor?: string,
+  signal?: AbortSignal,
+): Promise<MediaPageResponse> {
+  const search = new URLSearchParams({ ts: Date.now().toString() });
+  if (cursor) {
+    search.set("cursor", cursor);
+  }
+
+  const response = await fetch(buildApiUrl(`/api/video-assets?${search.toString()}`), {
+    method: "GET",
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to load video items.");
+  }
+
+  return response.json() as Promise<MediaPageResponse>;
 }

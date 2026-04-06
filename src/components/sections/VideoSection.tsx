@@ -1,0 +1,189 @@
+import { useEffect, useState } from "react";
+import { fetchVideoAssets } from "../../lib/api";
+import type { PortfolioAsset } from "../../types/portfolio";
+
+type VideoSectionProps = {
+  initialAssets: PortfolioAsset[];
+  initialNextCursor: string | null;
+  isLoading: boolean;
+};
+
+export function VideoSection({
+  initialAssets,
+  initialNextCursor,
+  isLoading,
+}: VideoSectionProps) {
+  const scrollToSectionStart = () => {
+    document.getElementById("videos")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const [items, setItems] = useState(initialAssets);
+  const [currentCursor, setCurrentCursor] = useState<string | null>(null);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([]);
+  const [isPageLoading, setIsPageLoading] = useState(false);
+  const [activeVideo, setActiveVideo] = useState<PortfolioAsset | null>(null);
+
+  useEffect(() => {
+    setItems(initialAssets);
+    setCurrentCursor(null);
+    setNextCursor(initialNextCursor);
+    setCursorHistory([]);
+  }, [initialAssets, initialNextCursor]);
+
+  useEffect(() => {
+    if (!activeVideo) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setActiveVideo(null);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [activeVideo]);
+
+  const handleNext = async () => {
+    if (!nextCursor || isPageLoading) {
+      return;
+    }
+
+    setIsPageLoading(true);
+
+    try {
+      const page = await fetchVideoAssets(nextCursor);
+      setCursorHistory((current) => [...current, currentCursor]);
+      setItems(page.items);
+      setCurrentCursor(nextCursor);
+      setNextCursor(page.nextCursor);
+      scrollToSectionStart();
+    } finally {
+      setIsPageLoading(false);
+    }
+  };
+
+  const handlePrevious = async () => {
+    if (cursorHistory.length === 0 || isPageLoading) {
+      return;
+    }
+
+    setIsPageLoading(true);
+    const nextHistory = cursorHistory.slice(0, -1);
+    const previousCursor = cursorHistory[cursorHistory.length - 1] ?? undefined;
+
+    try {
+      const page = await fetchVideoAssets(previousCursor ?? undefined);
+      setItems(page.items);
+      setCurrentCursor(previousCursor ?? null);
+      setNextCursor(page.nextCursor);
+      setCursorHistory(nextHistory);
+      scrollToSectionStart();
+    } finally {
+      setIsPageLoading(false);
+    }
+  };
+
+  const paginationControls = (
+    <div className="gallery-controls">
+      <button
+        type="button"
+        onClick={() => void handlePrevious()}
+        disabled={cursorHistory.length === 0 || isPageLoading}
+      >
+        Prev
+      </button>
+      <button
+        type="button"
+        onClick={() => void handleNext()}
+        disabled={!nextCursor || isPageLoading}
+      >
+        Next
+      </button>
+    </div>
+  );
+
+  return (
+    <>
+      <section className="gallery-section" id="videos">
+        <div className="gallery-header">
+          <div>
+            <p className="eyebrow">Videos</p>
+            <h3 className="gallery-title">Motion Archive</h3>
+          </div>
+          {paginationControls}
+        </div>
+        <div className="gallery-grid">
+          {items.length > 0
+            ? items.map((asset, index) => (
+                <article className="gallery-card gallery-card--video" key={asset.id}>
+                  <img src={asset.thumbnailUrl} alt={asset.alt} loading="lazy" />
+                  <button
+                    type="button"
+                    className="gallery-card__play"
+                    onClick={() => setActiveVideo(asset)}
+                    aria-label={`Play ${asset.title}`}
+                  >
+                    <span className="gallery-card__play-icon" aria-hidden="true" />
+                  </button>
+                  <div className="gallery-card__overlay" />
+                  <div className="gallery-card__meta">
+                    <span>VID_REF: {(index + 1).toString().padStart(3, "0")}</span>
+                  </div>
+                </article>
+              ))
+            : Array.from({ length: 4 }, (_, index) => (
+                <div className="gallery-card gallery-card--placeholder" key={index}>
+                  <div />
+                </div>
+              ))}
+        </div>
+        {(isLoading || isPageLoading) && (
+          <p className="gallery-note">Refreshing videos...</p>
+        )}
+        <div className="gallery-footer-pagination">{paginationControls}</div>
+      </section>
+
+      {activeVideo && (
+        <div
+          className="media-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={activeVideo.title}
+          onClick={() => setActiveVideo(null)}
+        >
+          <div className="media-modal__surface" onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className="media-modal__close"
+              onClick={() => setActiveVideo(null)}
+              aria-label="Close video player"
+            >
+              Close
+            </button>
+            <video
+              className="media-modal__video"
+              src={activeVideo.playbackUrl}
+              poster={activeVideo.thumbnailUrl}
+              controls
+              autoPlay
+              playsInline
+            />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

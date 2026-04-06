@@ -261,7 +261,7 @@ export function AdminPage() {
     return (
       <main className="admin-auth-page">
         <section className="admin-auth-card">
-          <p className="eyebrow">RAW FRAMES GALLERY</p>
+          <p className="eyebrow">ARCHIVE</p>
           <h1>Admin Panel</h1>
           <p>
             Enter the admin password to open the configuration editor at `/admin`.
@@ -293,7 +293,7 @@ export function AdminPage() {
   return (
     <main className="admin-page">
       <section className="admin-hero">
-        <p className="eyebrow">RAW FRAMES GALLERY</p>
+        <p className="eyebrow">ARCHIVE</p>
         <h1>Admin</h1>
         <p>
           Update carousel and gallery names from the folder configuration.

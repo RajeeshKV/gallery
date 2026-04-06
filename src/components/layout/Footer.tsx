@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="site-footer" id="info">
-      <div className="footer-meta">©2026 RAJEESH_KV.RAW_FRAMES_GALLERY</div>
+      <div className="footer-meta">&copy;2026 RAJEESH_KV.ARCHIVE</div>
       <div className="footer-links">
         <a
           href="https://www.instagram.com/rawframesgallery"
@@ -23,3 +23,4 @@ export function Footer() {
     </footer>
   );
 }
+

@@ -11,7 +11,7 @@ const FALLBACK_SLIDES = [
   {
     id: "fallback-1",
     url: "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1400&q=80",
-    title: "Raw Frames Gallery",
+    title: "ARCHIVE",
     alt: "Monochrome architecture",
     description: "Awaiting latest carousel assets",
   },
@@ -71,7 +71,7 @@ export function HeroSection({ slides, isLoading, error }: HeroSectionProps) {
           <h1>{displaySlides[activeIndex]?.title ?? "Architectural Stories"}</h1>
           <p className="hero-description">
             {displaySlides[activeIndex]?.description ??
-              "RAW FRAMES GALLERY presents monochrome studies of light, structure, and stillness."}
+              "ARCHIVE presents monochrome studies of light, structure, and stillness."}
           </p>
         </div>
         <div className="hero-dots">

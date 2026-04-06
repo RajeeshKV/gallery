@@ -11,16 +11,22 @@ export type PortfolioAsset = {
   format: string;
   folder: string;
   createdAt: string;
+  mediaType: "image" | "video";
+  thumbnailUrl: string;
+  playbackUrl: string;
+  duration?: number;
 };
 
 export type PortfolioResponse = {
   carousel: PortfolioAsset[];
   gallery: PortfolioAsset[];
   galleryNextCursor: string | null;
+  videos: PortfolioAsset[];
+  videosNextCursor: string | null;
   fetchedAt: string;
 };
 
-export type GalleryPageResponse = {
+export type MediaPageResponse = {
   items: PortfolioAsset[];
   nextCursor: string | null;
   fetchedAt: string;

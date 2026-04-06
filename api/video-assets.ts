@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { loadPortfolioAssets } from "../shared/cloudinary.js";
+import { loadVideoPage } from "../shared/cloudinary.js";
 
 function setNoCacheHeaders(response: ServerResponse) {
   response.setHeader(
@@ -12,16 +12,18 @@ function setNoCacheHeaders(response: ServerResponse) {
 }
 
 export default async function handler(
-  _request: IncomingMessage,
+  request: IncomingMessage,
   response: ServerResponse,
 ) {
   setNoCacheHeaders(response);
 
   try {
-    const portfolio = await loadPortfolioAssets();
+    const url = new URL(request.url ?? "", "http://localhost");
+    const cursor = url.searchParams.get("cursor") ?? undefined;
+    const videos = await loadVideoPage(cursor);
     response.statusCode = 200;
     response.setHeader("Content-Type", "application/json");
-    response.end(JSON.stringify(portfolio));
+    response.end(JSON.stringify(videos));
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown Cloudinary error";
@@ -31,12 +33,9 @@ export default async function handler(
     response.end(
       JSON.stringify({
         message,
+        items: [],
+        nextCursor: null,
         fetchedAt: new Date().toISOString(),
-        carousel: [],
-        gallery: [],
-        galleryNextCursor: null,
-        videos: [],
-        videosNextCursor: null,
       }),
     );
   }
